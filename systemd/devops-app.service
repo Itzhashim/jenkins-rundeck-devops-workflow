@@ -1,0 +1,38 @@
+# ==============================================================================
+# systemd service definition for DevOps Demo Application
+# Location: /etc/systemd/system/devops-app.service
+# ==============================================================================
+
+[Unit]
+Description=DevOps Demo Application (Spring Boot)
+Documentation=https://github.com/Itzhashim/jenkins-rundeck-devops-workflow
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=devops
+Group=devops
+WorkingDirectory=/opt/devops-app
+# Points to current active release symlink
+ExecStart=/usr/bin/java -Xms256m -Xmx512m -jar /opt/devops-app/current/devops-demo-app.jar
+ExecStop=/bin/kill -15 $MAINPID
+Restart=on-failure
+RestartSec=10
+SuccessExitStatus=143
+
+# Logging to systemd journal
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=devops-app
+
+# Environment configuration
+Environment=SERVER_PORT=8080
+Environment=SPRING_PROFILES_ACTIVE=production
+
+# Hardening / Security Sandboxing
+ProtectSystem=full
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,26 @@
+- defaultTab: output
+  description: Collects comprehensive server telemetry (CPU load, memory, disk usage, active listening ports, critical systemd services).
+  executionEnabled: true
+  group: Operations/Infrastructure
+  id: 7b8e5c12-3456-4789-a1b2-c3d4e5f60001
+  loglevel: INFO
+  name: 01 - Server Health Check
+  nodeFilterEditable: false
+  scheduleEnabled: true
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+      - description: Execute Server Health Inspection Script
+        exec: |
+          if [ -f /opt/devops-app/scripts/server-health.sh ]; then
+              bash /opt/devops-app/scripts/server-health.sh
+          elif [ -f ./scripts/server-health.sh ]; then
+              bash ./scripts/server-health.sh
+          else
+              echo "Executing inline telemetry fallback..."
+              uptime
+              free -m
+              df -h /
+          fi
+  uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60001

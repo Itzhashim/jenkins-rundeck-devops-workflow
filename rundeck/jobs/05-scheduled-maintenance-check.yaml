@@ -1,0 +1,27 @@
+- defaultTab: output
+  description: Scheduled automated system and server inspection. Demonstrates proactive operations without manual engineer intervention.
+  executionEnabled: true
+  group: Scheduled Operations
+  id: 7b8e5c12-3456-4789-a1b2-c3d4e5f60005
+  loglevel: INFO
+  name: 05 - Scheduled Server Health Check
+  nodeFilterEditable: false
+  schedule:
+    crontab: 0 0 2 * * ? *
+  scheduleEnabled: true
+  timeZone: UTC
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+      - description: Execute Scheduled Health Inspection
+        exec: |
+          echo "[SCHEDULED RUN] Initiating automated scheduled maintenance health check..."
+          if [ -f /opt/devops-app/scripts/server-health.sh ]; then
+              bash /opt/devops-app/scripts/server-health.sh
+          elif [ -f ./scripts/server-health.sh ]; then
+              bash ./scripts/server-health.sh
+          else
+              uptime
+          fi
+  uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60005

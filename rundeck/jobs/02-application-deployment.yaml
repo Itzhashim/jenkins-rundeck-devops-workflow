@@ -1,0 +1,45 @@
+- defaultTab: output
+  description: Automated deployment of Spring Boot application artifact with symlink updates, systemd service management, and health validation with auto-rollback.
+  executionEnabled: true
+  group: Deployment
+  id: 7b8e5c12-3456-4789-a1b2-c3d4e5f60002
+  loglevel: INFO
+  name: 02 - Application Deployment
+  nodeFilterEditable: false
+  options:
+    - name: BUILD_NUMBER
+      description: Jenkins Build Identifier or release tag
+      required: true
+      value: 'latest'
+    - name: ARTIFACT_NAME
+      description: Name of the built JAR artifact
+      required: true
+      value: 'devops-demo-app-1.0.0.jar'
+    - name: ENVIRONMENT
+      description: Deployment target environment
+      required: true
+      value: 'production'
+      values:
+        - production
+        - staging
+  scheduleEnabled: true
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+      - description: Execute Automated Deployment and Rollback Script
+        exec: |
+          if [ -f /opt/devops-app/scripts/deploy.sh ]; then
+              bash /opt/devops-app/scripts/deploy.sh "@option.BUILD_NUMBER@" "@option.ARTIFACT_NAME@" "@option.ENVIRONMENT@"
+          elif [ -f ./scripts/deploy.sh ]; then
+              bash ./scripts/deploy.sh "@option.BUILD_NUMBER@" "@option.ARTIFACT_NAME@" "@option.ENVIRONMENT@"
+          else
+              echo "Error: deploy.sh script not found!"
+              exit 1
+          fi
+      - description: Perform Post-Deployment Health Check Job
+        jobref:
+          group: Operations/Application
+          name: 03 - Application Health Check
+          uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60003
+  uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60002

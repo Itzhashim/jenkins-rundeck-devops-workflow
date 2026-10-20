@@ -1,0 +1,45 @@
+- defaultTab: output
+  description: Controlled, secure systemd service management operations with strict parameter whitelisting.
+  executionEnabled: true
+  group: Operations/System
+  id: 7b8e5c12-3456-4789-a1b2-c3d4e5f60004
+  loglevel: INFO
+  name: 04 - Service Management
+  nodeFilterEditable: false
+  options:
+    - name: SERVICE_NAME
+      description: Target system service
+      required: true
+      value: 'devops-app'
+      values:
+        - devops-app
+        - rundeckd
+        - jenkins
+        - ssh
+        - nginx
+    - name: ACTION
+      description: Lifecycle action to execute on service
+      required: true
+      value: 'status'
+      values:
+        - status
+        - restart
+        - start
+        - stop
+        - reload
+  scheduleEnabled: true
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+      - description: Execute Parameterized Service Operation
+        exec: |
+          if [ -f /opt/devops-app/scripts/service-management.sh ]; then
+              bash /opt/devops-app/scripts/service-management.sh "@option.SERVICE_NAME@" "@option.ACTION@"
+          elif [ -f ./scripts/service-management.sh ]; then
+              bash ./scripts/service-management.sh "@option.SERVICE_NAME@" "@option.ACTION@"
+          else
+              echo "Error: service-management.sh script not found!"
+              exit 1
+          fi
+  uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60004

@@ -1,0 +1,33 @@
+- defaultTab: output
+  description: Validates that the deployed application HTTP endpoints are responsive, reporting 200 OK and healthy component statuses.
+  executionEnabled: true
+  group: Operations/Application
+  id: 7b8e5c12-3456-4789-a1b2-c3d4e5f60003
+  loglevel: INFO
+  name: 03 - Application Health Check
+  nodeFilterEditable: false
+  options:
+    - name: TARGET_HOST
+      description: Target hostname or IP address
+      required: true
+      value: 'localhost'
+    - name: TARGET_PORT
+      description: Target port of the application service
+      required: true
+      value: '8080'
+  scheduleEnabled: true
+  sequence:
+    keepgoing: false
+    strategy: node-first
+    commands:
+      - description: Execute Application Health Check Script
+        exec: |
+          if [ -f /opt/devops-app/scripts/health-check.sh ]; then
+              bash /opt/devops-app/scripts/health-check.sh "@option.TARGET_HOST@" "@option.TARGET_PORT@"
+          elif [ -f ./scripts/health-check.sh ]; then
+              bash ./scripts/health-check.sh "@option.TARGET_HOST@" "@option.TARGET_PORT@"
+          else
+              echo "Checking HTTP health endpoint directly..."
+              curl -s -i "http://@option.TARGET_HOST@:@option.TARGET_PORT@/api/health"
+          fi
+  uuid: 7b8e5c12-3456-4789-a1b2-c3d4e5f60003
